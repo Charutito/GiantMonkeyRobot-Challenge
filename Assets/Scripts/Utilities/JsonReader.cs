@@ -19,6 +19,18 @@ public static class JsonReader
     }
 
     /// <summary>
+    /// Read and deserialize a json in a List
+    /// </summary>
+    /// <typeparam name="T">Object taken from Json</typeparam>
+    /// <param name="json"></param>
+    /// <returns></returns>
+    public static List<T> GetList<T>(string json)
+    {
+        List<T> jsonList = JsonConvert.DeserializeObject<List<T>>(json);
+        return jsonList;
+    }
+
+    /// <summary>
     /// Read and return the json of a specified path
     /// </summary>
     /// <param name="jsonPath">Json path to be read</param>
