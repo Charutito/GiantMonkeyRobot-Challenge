@@ -9,11 +9,19 @@
         this.View = view;
 
         SetView();
+        View.OnRefresh += UpdateTable;
     }
 
     public void SetView()
     {
         View.SetTitle(Model.Title);
         View.SetContent(Model.GetHeaders(), Model.GetContentData());
+    }
+
+    private void UpdateTable()
+    {
+        Model.LoadJson();
+        View.ClearView();
+        SetView();
     }
 }

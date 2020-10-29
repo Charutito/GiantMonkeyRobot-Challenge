@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,23 @@ public class ChallengeTableView : MonoBehaviour, IView
     [SerializeField]
     private ChallengeTableItemText contentPrefab;
 
+    private List<ChallengeTableData> cachedContent;
+    public event Action OnRefresh;
+
+    public void Awake()
+    {
+        refreshButton.onClick.AddListener(OnRefreshClicked);
+        cachedContent = new List<ChallengeTableData>();
+    }
+
+    protected void OnRefreshClicked()
+    {
+        if (OnRefresh != null)
+        {
+            OnRefresh.Invoke();
+        }
+    }
+
     public void SetTitle(string title)
     {
         this.title.text = title;
@@ -32,7 +50,7 @@ public class ChallengeTableView : MonoBehaviour, IView
     {
         ChallengeTableData headerContentData = Instantiate(rowObjectPrefab, contentContainer.transform);
         headerContentData.Setup(contentHeaderPrefab, headers);
-        //cachedColumnContent.Add(headerContentData);
+        cachedContent.Add(headerContentData);
     }
 
     private void SetupContentData(List<Dictionary<string, string>> contentData)
@@ -47,7 +65,25 @@ public class ChallengeTableView : MonoBehaviour, IView
             }
 
             data.Setup(contentPrefab, contentList);
-            //cachedColumnContent.Add(data);
+            cachedContent.Add(data);
         }
+    }
+
+    public void ClearView()
+    {
+        SetTitle(string.Empty);
+
+        for (int i = 0; i < cachedContent.Count; i++)
+        {
+            Destroy(cachedContent[i].gameObject);
+        }
+
+        cachedContent = new List<ChallengeTableData>();
+    }
+
+    public void OnDestroy()
+    {
+        refreshButton.onClick.RemoveListener(OnRefreshClicked);
+
     }
 }
